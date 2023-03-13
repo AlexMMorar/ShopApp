@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import './product.dart';
 
@@ -66,11 +69,38 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void addProduct(Product product) {
-    _items.add(product);
-    //_items.insert(0, product); // to add product at start of the list.
-    notifyListeners();
+  void postProduct(Product product) {}
+
+  Future<void> addProduct(Product product) {
+    final uri = Uri(
+        scheme: 'https',
+        host:
+            'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
+        path: 'products.json');
+
+    final future = http
+        .post(uri,
+            body: json.encode({
+              'title': product.title,
+              'description': product.description,
+              'imageUrl': product.imageUrl,
+              'price': product.price,
+              'isFavroite': product.isFavorite,
+            }))
+        .then((response) {
+      final storedProduct = Product(
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl,
+          id: json.decode(response.body)['name'],
+          isFavorite: product.isFavorite);
+      _items.add(storedProduct);
+      notifyListeners();
+    });
+    return future;
   }
+  //_items.insert(0, product); // to add product at start of the list
 
   void updateProduct(String id, Product newProduct) {
     final prodIndex = _items.indexWhere((element) => element.id == id);
