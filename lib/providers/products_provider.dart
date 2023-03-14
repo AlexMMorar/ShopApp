@@ -71,34 +71,34 @@ class Products with ChangeNotifier {
 
   void postProduct(Product product) {}
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     final uri = Uri(
         scheme: 'https',
         host:
             'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
         path: 'products.json');
-
-    final future = http
-        .post(uri,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'imageUrl': product.imageUrl,
-              'price': product.price,
-              'isFavroite': product.isFavorite,
-            }))
-        .then((response) {
+    try {
+      final result = await http.post(uri,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavroite': product.isFavorite,
+          }));
       final storedProduct = Product(
           title: product.title,
           description: product.description,
           price: product.price,
           imageUrl: product.imageUrl,
-          id: json.decode(response.body)['name'],
+          id: json.decode(result.body)['name'],
           isFavorite: product.isFavorite);
       _items.add(storedProduct);
       notifyListeners();
-    });
-    return future;
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
   }
   //_items.insert(0, product); // to add product at start of the list
 
