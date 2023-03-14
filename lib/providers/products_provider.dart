@@ -69,6 +69,21 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
+  Future<void> fetchAndSetProducts() async {
+    final uri = Uri(
+        scheme: 'https',
+        host:
+            'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
+        path: 'products.json');
+
+    try {
+      final response = await http.get(uri);
+      print(json.decode(response.body));
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   void postProduct(Product product) {}
 
   Future<void> addProduct(Product product) async {
