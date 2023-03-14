@@ -130,9 +130,22 @@ class Products with ChangeNotifier {
   }
   //_items.insert(0, product); // to add product at start of the list
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((element) => element.id == id);
     if (prodIndex >= 0) {
+      final uri = Uri(
+          scheme: 'https',
+          host:
+              'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
+          path: 'products/$id.json');
+      await http.patch(uri,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price,
+            'isFavorite': newProduct.isFavorite,
+          }));
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
@@ -141,7 +154,20 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String id) {
-    _items.removeWhere((element) => element.id == id);
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    var existingProduct = _items[existingProductIndex];
+
+    final uri = Uri(
+        scheme: 'https',
+        host:
+            'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
+        path: 'products/$id.json');
+    http.delete(uri).then((_) {}).catchError((_) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+    });
+    _items.removeAt(existingProductIndex);
     notifyListeners();
   }
 }
