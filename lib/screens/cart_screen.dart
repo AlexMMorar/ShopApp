@@ -11,6 +11,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
+    final isCartEmpty = cart.itemCount == 0;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
@@ -34,20 +35,26 @@ class CartScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: !isCartEmpty
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
               ),
               TextButton(
-                onPressed: () {
-                  Provider.of<Orders>(context, listen: false).addOrder(
-                    cart.items.values.toList(),
-                    cart.totalAmount,
-                  );
-                  cart.clear();
-                },
+                onPressed: !isCartEmpty
+                    ? () async {
+                        Provider.of<Orders>(context, listen: false).addOrder(
+                          cart.items.values.toList(),
+                          cart.totalAmount,
+                        );
+                        cart.clear();
+                      }
+                    : null,
                 child: Text(
                   'ORDER NOW',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  style: TextStyle(
+                      color: !isCartEmpty
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey),
                 ),
               )
             ]),
