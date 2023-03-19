@@ -26,6 +26,36 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  Future<void> loadOrders() async {
+    final uri = Uri(
+        scheme: 'https',
+        host:
+            'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
+        path: 'orders.json');
+
+    try {
+      final result = await http.get(uri);
+      final rawOrder = json.decode(result.body) as Map<String, dynamic>;
+      rawOrder.forEach((rawId, order) {
+        final rawProduct = order['products'] as List;
+        List<CartItem> cartItems = [];
+        rawProduct.forEach((element) => cartItems.add(CartItem(
+            id: "",
+            title: element['title'],
+            quantity: element['quantity'],
+            price: element['price'])));
+        _orders.add(OrderItem(
+            id: rawId,
+            amount: order['amount'],
+            dateTime: order['dateTime'],
+            products: cartItems));
+      });
+      notifyListeners();
+    } catch (_) {
+      print("error");
+    }
+  }
+
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final uri = Uri(
         scheme: 'https',
