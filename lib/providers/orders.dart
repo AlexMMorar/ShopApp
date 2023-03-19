@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shop_app/providers/cart.dart';
+import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -36,6 +37,7 @@ class Orders with ChangeNotifier {
     try {
       final result = await http.get(uri);
       final rawOrder = json.decode(result.body) as Map<String, dynamic>;
+      final List<OrderItem> currentOrders = [];
       rawOrder.forEach((rawId, order) {
         final rawProduct = order['products'] as List;
         List<CartItem> cartItems = [];
@@ -44,15 +46,17 @@ class Orders with ChangeNotifier {
             title: element['title'],
             quantity: element['quantity'],
             price: element['price'])));
-        _orders.add(OrderItem(
+        currentOrders.add(OrderItem(
             id: rawId,
             amount: order['amount'],
-            dateTime: order['dateTime'],
+            dateTime:
+                DateFormat('dd/MM/yyyy').format(order['dateTime'] as String),
             products: cartItems));
       });
+      _orders = currentOrders;
       notifyListeners();
-    } catch (_) {
-      print("error");
+    } catch (err) {
+      print("error: $err");
     }
   }
 
