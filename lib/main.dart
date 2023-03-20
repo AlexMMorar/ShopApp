@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/screens/auth_screen.dart';
 import 'package:shop_app/screens/cart_screen.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContextcontext) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (ctx) => Auth()),
         ChangeNotifierProvider(
           create: (ctx) => Products(),
         ),
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
             ),
             fontFamily: 'Lato',
             textTheme: const TextTheme(
-              titleMedium: TextStyle(color: Colors.white),
+              titleMedium: TextStyle(color: Colors.black),
             ),
             primaryTextTheme:
                 const TextTheme(button: TextStyle(color: Colors.amber))),
