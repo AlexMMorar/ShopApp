@@ -49,8 +49,7 @@ class Orders with ChangeNotifier {
         currentOrders.add(OrderItem(
             id: rawId,
             amount: order['amount'],
-            dateTime:
-                DateFormat('dd/MM/yyyy').format(order['dateTime'] as String),
+            dateTime: DateTime.parse(order['dateTime']),
             products: cartItems));
       });
       _orders = currentOrders;
