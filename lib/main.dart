@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart';
+import 'package:shop_app/screens/auth_screen.dart';
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
@@ -31,19 +32,24 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'MyShop',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.purple,
-            accentColor: Colors.deepOrange,
-          ),
-          fontFamily: 'Lato',
-        ),
-        home: ProductsOverviewScreen(),
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.purple,
+              accentColor: Colors.deepOrange,
+            ),
+            fontFamily: 'Lato',
+            textTheme: const TextTheme(
+              titleMedium: TextStyle(color: Colors.white),
+            ),
+            primaryTextTheme:
+                const TextTheme(button: TextStyle(color: Colors.amber))),
+        home: AuthScreen(),
         routes: {
           ProductDetailsScreen.routeName: ((ctx) => ProductDetailsScreen()),
           CartScreen.routeName: ((ctx) => const CartScreen()),
           OrdersScreen.routeName: ((ctx) => const OrdersScreen()),
           UserProductsScreen.routeName: ((ctx) => const UserProductsScreen()),
           EditProductScreen.routeName: ((ctx) => const EditProductScreen()),
+          AuthScreen.routeName: ((ctx) => AuthScreen())
         },
       ),
     );
