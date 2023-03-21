@@ -20,9 +20,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContextcontext) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => Auth()),
         ChangeNotifierProvider(
-          create: (ctx) => Products(),
+          create: (ctx) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (ctx, auth, previousProducts) => Products(auth.token!),
+          create: (context) => Products(''),
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
@@ -31,28 +34,29 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Orders(),
         )
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.purple,
-              accentColor: Colors.deepOrange,
-            ),
-            fontFamily: 'Lato',
-            textTheme: const TextTheme(
-              titleMedium: TextStyle(color: Colors.black),
-            ),
-            primaryTextTheme:
-                const TextTheme(button: TextStyle(color: Colors.amber))),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailsScreen.routeName: ((ctx) => ProductDetailsScreen()),
-          CartScreen.routeName: ((ctx) => const CartScreen()),
-          OrdersScreen.routeName: ((ctx) => const OrdersScreen()),
-          UserProductsScreen.routeName: ((ctx) => const UserProductsScreen()),
-          EditProductScreen.routeName: ((ctx) => const EditProductScreen()),
-          AuthScreen.routeName: ((ctx) => AuthScreen())
-        },
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          title: 'MyShop',
+          theme: ThemeData(
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: Colors.purple,
+                accentColor: Colors.deepOrange,
+              ),
+              fontFamily: 'Lato',
+              textTheme: const TextTheme(
+                titleMedium: TextStyle(color: Colors.black),
+              ),
+              primaryTextTheme:
+                  const TextTheme(button: TextStyle(color: Colors.amber))),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductDetailsScreen.routeName: ((ctx) => ProductDetailsScreen()),
+            CartScreen.routeName: ((ctx) => const CartScreen()),
+            OrdersScreen.routeName: ((ctx) => const OrdersScreen()),
+            UserProductsScreen.routeName: ((ctx) => const UserProductsScreen()),
+            EditProductScreen.routeName: ((ctx) => const EditProductScreen())
+          },
+        ),
       ),
     );
   }

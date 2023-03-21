@@ -43,6 +43,8 @@ class Products with ChangeNotifier {
   // ];
 
   // var _showFavoritesOnly = false;
+  final String authToken;
+  Products(this.authToken);
 
   List<Product> get items {
     // if (_showFavoritesOnly) {
@@ -78,7 +80,8 @@ class Products with ChangeNotifier {
         path: 'products.json');
 
     try {
-      final response = await http.get(uri);
+      final response = await http.get(Uri.parse(
+          'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken'));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
       print(json.decode(response.body));
@@ -105,7 +108,7 @@ class Products with ChangeNotifier {
         scheme: 'https',
         host:
             'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
-        path: 'products.json');
+        path: 'products.json?auth=...');
     try {
       final result = await http.post(uri,
           body: json.encode({
