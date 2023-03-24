@@ -104,13 +104,10 @@ class Products with ChangeNotifier {
   void postProduct(Product product) {}
 
   Future<void> addProduct(Product product) async {
-    final uri = Uri(
-        scheme: 'https',
-        host:
-            'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
-        path: 'products.json?auth=...');
     try {
-      final result = await http.post(uri,
+      final result = await http.post(
+          Uri.parse(
+              'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken'),
           body: json.encode({
             'title': product.title,
             'description': product.description,
@@ -137,12 +134,9 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((element) => element.id == id);
     if (prodIndex >= 0) {
-      final uri = Uri(
-          scheme: 'https',
-          host:
-              'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
-          path: 'products/$id.json');
-      await http.patch(uri,
+      await http.patch(
+          Uri.parse(
+              'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json?auth=$authToken'),
           body: json.encode({
             'title': newProduct.title,
             'description': newProduct.description,
@@ -163,13 +157,12 @@ class Products with ChangeNotifier {
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
     notifyListeners();
-    final uri = Uri(
-        scheme: 'https',
-        host:
-            'flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app',
-        path: 'products/$id.json');
-
-    await http.delete(uri).then((response) {
+    await http
+        .delete(
+      Uri.parse(
+          'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json?auth=$authToken'),
+    )
+        .then((response) {
       print(response.statusCode);
       if (response.statusCode >= 400) {
         _items.insert(existingProductIndex, existingProduct);
