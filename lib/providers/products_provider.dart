@@ -44,7 +44,8 @@ class Products with ChangeNotifier {
 
   // var _showFavoritesOnly = false;
   final String authToken;
-  Products(this.authToken);
+  final String userId;
+  Products(this.authToken, this.userId);
 
   List<Product> get items {
     // if (_showFavoritesOnly) {
@@ -84,7 +85,11 @@ class Products with ChangeNotifier {
           'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken'));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
-      print(json.decode(response.body));
+
+      final url =
+          'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId.json?auth=$authToken';
+      final extractedFavorite = await http.get(Uri.parse(url));
+      final favoriteData = json.decode(extractedFavorite.body);
       extractedData.forEach((productId, productData) {
         loadedProducts.add(Product(
             id: productId,
@@ -92,7 +97,9 @@ class Products with ChangeNotifier {
             description: productData['description'],
             price: productData['price'],
             imageUrl: productData['imageUrl'],
-            isFavorite: productData['isFavorite']));
+            isFavorite: favoriteData == null
+                ? false
+                : favoriteData[productId] ?? false));
       });
       _items = loadedProducts;
       notifyListeners();
@@ -113,7 +120,6 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
           }));
       final storedProduct = Product(
           title: product.title,
