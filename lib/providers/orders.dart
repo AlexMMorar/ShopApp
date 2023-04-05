@@ -23,8 +23,9 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
   final String authToken;
+  final String userId;
 
-  Orders(this.authToken, this._orders);
+  Orders(this.authToken, this.userId, this._orders);
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -33,7 +34,7 @@ class Orders with ChangeNotifier {
   Future<void> loadOrders() async {
     try {
       final result = await http.get(Uri.parse(
-          'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken'));
+          'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken'));
       final rawOrder = json.decode(result.body) as Map<String, dynamic>;
       final List<OrderItem> currentOrders = [];
       rawOrder.forEach((rawId, order) {
@@ -62,7 +63,7 @@ class Orders with ChangeNotifier {
       final time = DateTime.now();
       final result = await http.post(
           Uri.parse(
-              'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken'),
+              'https://flutter-update-e2a4b-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken'),
           body: json.encode({
             'amount': total,
             'products': cartProducts.map((e) {
